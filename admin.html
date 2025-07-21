@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Key Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
+
+        :root {
+            --dark-bg: #111122;
+            --dark-card: #20203a;
+            --accent-color: #00bcd4;
+            --text-color: #e0e0e0;
+            --input-bg: #3c3c5c;
+            --border-color: #5a5a7d;
+            --button-hover: #00e5ff;
+            --glow-color: rgba(0, 188, 212, 0.4);
+            --success-color: #4CAF50;
+            --error-color: #ff6b6b;
+            --warning-color: #ffc107;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #08081a 100%);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--glow-color);
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background: var(--dark-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), 0 0 60px var(--glow-color);
+            width: 90%;
+            max-width: 800px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        .form-group input, .form-group select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1em;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--glow-color);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(90deg, #007bff, var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 15px rgba(0, 188, 212, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 188, 212, 0.5);
+            background: linear-gradient(90deg, #0056b3, var(--button-hover));
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 5px rgba(0, 188, 212, 0.3);
+        }
+
+        .btn-toggle-status {
+            background: #6c757d; /* Grey */
+            font-size: 0.8em;
+            padding: 8px 12px;
+            margin-left: 10px;
+        }
+
+        .btn-toggle-status:hover {
+            background: #5a6268;
+            box-shadow: none;
+        }
+        
+        .btn-toggle-status.active-status {
+            background: var(--success-color);
+        }
+        .btn-toggle-status.active-status:hover {
+            background: #449d48;
+        }
+
+        .btn-toggle-status.inactive-status {
+            background: var(--error-color);
+        }
+        .btn-toggle-status.inactive-status:hover {
+            background: #d43f3a;
+        }
+
+
+        #keyOutput {
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+            font-size: 1.1em;
+            word-break: break-all; /* Ngắt dòng nếu key quá dài */
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 0.9em;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid transparent;
+        }
+        .message.success {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+        .message.error {
+            background-color: rgba(255, 107, 107, 0.2);
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+
+        .key-list-container {
+            margin-top: 30px;
+        }
+
+        .key-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .key-item {
+            background: var(--input-bg);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .key-details {
+            flex-grow: 1;
+        }
+
+        .key-value {
+            font-weight: bold;
+            color: var(--accent-color);
+            word-break: break-all;
+            margin-bottom: 5px;
+        }
+
+        .key-meta {
+            font-size: 0.85em;
+            color: rgba(224, 224, 224, 0.7);
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Admin Panel - Key Management</h1>
+
+    <div class="container">
+        <h2>Tạo Key Mới</h2>
+        <div class="form-group">
+            <label for="durationDays">Thời hạn sử dụng (ngày):</label>
+            <input type="number" id="durationDays" value="30" min="1">
+        </div>
+        <div class="form-group">
+            <label for="keyPrefix">Tiền tố Key (ví dụ: ABYSS-):</label>
+            <input type="text" id="keyPrefix" value="ABYSS-">
+        </div>
+        <button id="generateKeyBtn" class="btn">Tạo Key</button>
+        <div id="generationStatus" class="message"></div>
+        <div id="keyOutput">Key sẽ hiển thị ở đây</div>
+    </div>
+
+    <div class="container key-list-container">
+        <h2>Danh sách Key Hiện Có</h2>
+        <button id="refreshKeysBtn" class="btn">Tải lại danh sách</button>
+        <div id="keyListStatus" class="message"></div>
+        <ul id="keyList" class="key-list">
+            <li>Đang tải...</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateKeyBtn = document.getElementById('generateKeyBtn');
+            const durationDaysInput = document.getElementById('durationDays');
+            const keyPrefixInput = document.getElementById('keyPrefix');
+            const keyOutput = document.getElementById('keyOutput');
+            const generationStatus = document.getElementById('generationStatus');
+
+            const refreshKeysBtn = document.getElementById('refreshKeysBtn');
+            const keyList = document.getElementById('keyList');
+            const keyListStatus = document.getElementById('keyListStatus');
+
+            // --- Hàm hiển thị thông báo ---
+            function showMessage(element, msg, type) {
+                element.textContent = msg;
+                element.className = `message ${type}`;
+            }
+
+            // --- Hàm tải danh sách key ---
+            async function fetchKeys() {
+                keyList.innerHTML = '<li>Đang tải danh sách key...</li>';
+                showMessage(keyListStatus, '', ''); // Clear status
+                try {
+                    const response = await fetch('/get-keys');
+                    const keys = await response.json();
+                    
+                    keyList.innerHTML = ''; // Clear existing list
+                    if (Object.keys(keys).length === 0) {
+                        keyList.innerHTML = '<li>Chưa có key nào được tạo.</li>';
+                        return;
+                    }
+
+                    for (const key in keys) {
+                        const keyInfo = keys[key];
+                        const listItem = document.createElement('li');
+                        listItem.className = 'key-item';
+                        listItem.innerHTML = `
+                            <div class="key-details">
+                                <div class="key-value">${key}</div>
+                                <div class="key-meta">
+                                    Trạng thái: <span style="color: ${keyInfo.status === 'active' ? 'var(--success-color)' : 'var(--error-color)'}">${keyInfo.status.toUpperCase()}</span> | 
+                                    Tạo ngày: ${keyInfo.created_at} | 
+                                    Hết hạn: ${keyInfo.expires} (${keyInfo.duration_days} ngày)
+                                </div>
+                            </div>
+                            <button class="btn btn-toggle-status ${keyInfo.status}-status" data-key="${key}">
+                                ${keyInfo.status === 'active' ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                            </button>
+                        `;
+                        keyList.appendChild(listItem);
+                    }
+                    showMessage(keyListStatus, 'Tải danh sách key thành công.', 'success');
+
+                } catch (error) {
+                    console.error('Lỗi khi tải key:', error);
+                    showMessage(keyListStatus, 'Lỗi khi tải danh sách key. Vui lòng kiểm tra console.', 'error');
+                    keyList.innerHTML = '<li>Không thể tải danh sách key.</li>';
+                }
+            }
+
+            // --- Hàm tạo key ---
+            generateKeyBtn.addEventListener('click', async () => {
+                const durationDays = durationDaysInput.value;
+                const keyPrefix = keyPrefixInput.value;
+                showMessage(generationStatus, 'Đang tạo key...', ''); // Clear status
+
+                if (durationDays < 1) {
+                    showMessage(generationStatus, 'Thời hạn sử dụng phải ít nhất 1 ngày.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/generate-key', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ duration_days: parseInt(durationDays), prefix: keyPrefix })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        keyOutput.textContent = `Key: ${data.key} (Hết hạn: ${data.expires})`;
+                        showMessage(generationStatus, 'Key đã được tạo thành công!', 'success');
+                        fetchKeys(); // Tải lại danh sách key sau khi tạo mới
+                    } else {
+                        showMessage(generationStatus, `Lỗi: ${data.message}`, 'error');
+                        keyOutput.textContent = 'Key không thể tạo.';
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi tạo key:', error);
+                    showMessage(generationStatus, 'Lỗi khi kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+                }
+            });
+
+            // --- Xử lý sự kiện bật/tắt trạng thái key ---
+            keyList.addEventListener('click', async (event) => {
+                if (event.target.classList.contains('btn-toggle-status')) {
+                    const keyToToggle = event.target.dataset.key;
+                    showMessage(keyListStatus, `Đang thay đổi trạng thái key ${keyToToggle}...`, 'warning');
+
+                    try {
+                        const response = await fetch('/toggle-key-status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ key: keyToToggle })
+                        });
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showMessage(keyListStatus, data.message, 'success');
+                            fetchKeys(); // Tải lại danh sách để cập nhật trạng thái
+                        } else {
+                            showMessage(keyListStatus, `Lỗi: ${data.message}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi thay đổi trạng thái key:', error);
+                        showMessage(keyListStatus, 'Lỗi khi kết nối đến máy chủ để thay đổi trạng thái key.', 'error');
+                    }
+                }
+            });
+
+            // Tải danh sách key khi trang được load
+            refreshKeysBtn.addEventListener('click', fetchKeys);
+            fetchKeys();
+        });
+    </script>
+</body>
+</html>
